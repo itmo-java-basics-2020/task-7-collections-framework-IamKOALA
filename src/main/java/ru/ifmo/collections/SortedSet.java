@@ -1,7 +1,6 @@
 package ru.ifmo.collections;
 
-import java.util.AbstractSet;
-import java.util.Comparator;
+import java.util.*;
 
 /**
  * Represents sorted set of unique values.
@@ -16,21 +15,68 @@ import java.util.Comparator;
  *
  * @param <T> set contents type
  */
-public abstract class SortedSet<T> extends AbstractSet<T> {
-    // private final Map<???, ???> contents; TODO decide Map implementation and key/value types. "???" is used just as an example
+public class SortedSet<T> extends AbstractSet<T> {
+    private Map<T, Boolean> contents;
+
+    private SortedSet(TreeMap<T, Boolean> map) {
+        this.contents = map;
+    }
+
+
     public static <T> SortedSet<T> create() {
-        throw new UnsupportedOperationException(); // TODO implement
+        return new SortedSet<>(new TreeMap<>());
     }
 
     public static <T> SortedSet<T> from(Comparator<T> comparator) {
-        throw new UnsupportedOperationException(); // TODO implement
+        return new SortedSet<>(new TreeMap<>(comparator));
     }
 
-    public T[] getSorted() {
-        throw new UnsupportedOperationException(); // TODO implement
+    public List<T> getSorted() {
+        return new ArrayList<>(contents.keySet());
     }
 
-    public T[] getReversed() {
-        throw new UnsupportedOperationException(); // TODO implement
+    public List<T> getReversed() {
+        List<T> tmp = new ArrayList<>(contents.keySet());
+        Collections.reverse(tmp);
+        return tmp;
     }
+
+    @Override
+    public Iterator<T> iterator() {
+        return contents.keySet().iterator();
+    }
+
+    @Override
+    public int size() {
+        return contents.size();
+    }
+
+    @Override
+    public boolean add(T val) {
+        return contents.put(val, true) == null;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends T> c) {
+        boolean f = false;
+        for(T i : c) {
+            f &= add(i);
+        }
+        return f;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return contents.remove(o, true);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        boolean f = false;
+        for(Object i : c) {
+            f &= remove(i);
+        }
+        return f;
+    }
+
 }
